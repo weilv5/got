@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.Role">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select new Role(t.id, t.sort, t.backup, t.roleName, t.admin) from Role t Where t.delFlag = :delFlag
+                #if($parentRoleId && $parentRoleId.length() > 0)
+                AND t.parentRoleId = :parentRoleId
+                #else
+                AND t.parentRoleId is null
+                #end
+
+                #if($roleName && $roleName.length() > 0)
+                AND t.roleName like concat('%', :roleName, '%')
+                #end
+        ]]> order by t.sort asc
+    </query>
+
+    <query name="selectAll" qlType="JPQL">
+        <![CDATA[
+        select t from Role t Where t.delFlag = :delFlag
+        ]]> order by t.sort asc
+    </query>
+
+
+</dynamic-hibernate>

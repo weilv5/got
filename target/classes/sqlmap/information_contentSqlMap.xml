@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.InformationContent">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select new InformationContent(t.id, t.author, t.releasedDate, t.title, t.infoType, t.user.name) from InformationContent t Where t.delFlag = :delFlag
+                #if($releasedDateStart)
+                AND t.releasedDate >= :releasedDateStart
+                #end
+                #if($releasedDateEnd)
+                AND t.releasedDate <= :releasedDateEnd
+                #end
+
+                #if($title && $title.length() > 0)
+                AND t.title like concat('%', :title, '%')
+                #end
+
+                #if($infoType && $infoType.length() > 0)
+                AND t.infoType = :infoType
+                #end
+                order by t.releasedDate desc
+        ]]>
+    </query>
+</dynamic-hibernate>

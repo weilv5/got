@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.Module">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select new Module(t.id, t.moduleAddr, t.isVisible, t.isPublic, t.target, t.moduleCode, t.moduleName, t.iconAddr,t.hasChild) from Module t Where t.delFlag = :delFlag
+
+                #if($isVisible)
+                AND t.isVisible = :isVisible
+                #end
+
+                #if($parentModuleId && $parentModuleId.length() > 0)
+                AND t.parentModuleId = :parentModuleId
+                #else
+                AND t.parentModuleId is null
+                #end
+
+                #if($moduleCode && $moduleCode.length() > 0)
+                AND t.moduleCode = :moduleCode
+                #end
+
+                #if($moduleName && $moduleName.length() > 0)
+                AND t.moduleName like concat('%', :moduleName, '%')
+                #end
+
+                #if($role && $role.id.length() > 0)
+                AND  :role in elements(t.roleList)
+                #end
+
+                #if($isPublic)
+                AND t.isPublic = :isPublic
+                #end
+
+        ]]> order by t.sortSq asc
+    </query>
+
+    <query name="queryAllProperties" qlType="JPQL">
+        <![CDATA[
+        select t from Module t Where t.delFlag = :delFlag
+
+                #if($isVisible)
+                AND t.isVisible = :isVisible
+                #end
+
+                #if($parentModuleId && $parentModuleId.length() > 0)
+                AND t.parentModuleId = :parentModuleId
+                #else
+                AND t.parentModuleId is null
+                #end
+
+                #if($moduleCode && $moduleCode.length() > 0)
+                AND t.moduleCode = :moduleCode
+                #end
+
+                #if($moduleName && $moduleName.length() > 0)
+                AND t.moduleName like concat('%', :moduleName, '%')
+                #end
+
+                #if($role && $role.id.length() > 0)
+                AND  :role in elements(t.roleList)
+                #end
+
+                #if($isPublic)
+                AND t.isPublic = :isPublic
+                #end
+
+        ]]> order by t.sortSq asc
+    </query>
+
+    <query name="queryByRoles" qlType="JPQL">
+        <![CDATA[
+        select distinct t from Module  t left join t.roleList r Where t.delFlag = :delFlag
+
+                #if($isVisible)
+                AND t.isVisible = :isVisible
+                #end
+
+                #if($parentModuleId && $parentModuleId.length() > 0)
+                AND t.parentModuleId = :parentModuleId
+                #else
+                AND t.parentModuleId is null
+                #end
+
+                #if($moduleCode && $moduleCode.length() > 0)
+                AND t.moduleCode = :moduleCode
+                #end
+
+                #if($moduleName && $moduleName.length() > 0)
+                AND t.moduleName like concat('%', :moduleName, '%')
+                #end
+
+                #if($roleList)
+                AND (r.id in (:roleList)  or t.isPublic = 1)
+                #end
+
+                #if(!$roleList)
+                AND t.isPublic = 1
+                #end
+
+        ]]> order by t.sortSq asc
+    </query>
+    <query name="queryAllByRoles" qlType="JPQL">
+        <![CDATA[
+        select t from Module  t left join t.roleList r Where t.delFlag = :delFlag
+
+                #if($isVisible)
+                AND t.isVisible = :isVisible
+                #end
+
+                #if($parentModuleId && $parentModuleId.length() > 0)
+                AND t.parentModuleId = :parentModuleId
+                #end
+
+                #if($moduleCode && $moduleCode.length() > 0)
+                AND t.moduleCode = :moduleCode
+                #end
+
+                #if($moduleName && $moduleName.length() > 0)
+                AND t.moduleName like concat('%', :moduleName, '%')
+                #end
+
+                #if($roleList)
+                AND (r.id in (:roleList)  or t.isPublic = 1)
+                #end
+
+        ]]> order by t.sortSq asc
+    </query>
+</dynamic-hibernate>

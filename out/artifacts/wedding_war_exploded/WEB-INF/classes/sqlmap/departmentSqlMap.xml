@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.Department">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t  from Department t Where t.delFlag = :delFlag
+                #if($deptName && $deptName.length() > 0)
+                AND t.deptName like concat('%', :deptName, '%')
+                #end
+                #if($parentDeptId && $parentDeptId.length() > 0)
+                AND t.parentDeptId = :parentDeptId
+                #elseif(!$role)
+                AND t.parentDeptId is null
+                #else
+                #end
+                #if($role && $role.id.length() > 0)
+                AND  :role in elements(t.deptRoleList)
+                #end
+                #if($enable)
+                AND t.enable = :enable
+                #else
+                AND t.enable = 1
+                #end
+        ]]> order by t.sort asc
+    </query>
+    <query name="queryAllProperties" qlType="JPQL">
+        <![CDATA[
+        select t from Department t Where t.delFlag = :delFlag
+                #if($parentDeptId && $parentDeptId.length() > 0)
+                AND t.parentDeptId = :parentDeptId
+                #else
+                AND t.parentDeptId is null
+                #end
+        ]]> order by t.sort asc
+    </query>
+
+</dynamic-hibernate>

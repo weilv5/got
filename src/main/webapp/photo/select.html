@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+    <link rel="stylesheet" type="text/css" href="../css/demo.css" />
+    <link rel="stylesheet" type="text/css" href="../css/cs-select.css" />
+    <link rel="stylesheet" type="text/css" href="../css/cs-skin-rotate.css" />
+
+</head>
+<body class="color-6">
+<div>
+    <section>
+        <select class="cs-select cs-skin-rotate">
+            <option value="1">Stegosaurus</option>
+            <option value="2">Velociraptor</option>
+            <option value="3">Spinosaurus</option>
+            <option value="4">Archaeopteryx</option>
+            <option value="5">Apatosaurus</option>
+        </select>
+    </section>
+</div><!-- /container -->
+
+</body>
+<script src="../js/classie.js"></script>
+<script src="../js/selectFx.js"></script>
+<script>
+    (function() {
+        [].slice.call( document.querySelectorAll( 'select.cs-select' ) ).forEach( function(el) {
+            new SelectFx(el);
+        } );
+    })();
+</script>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.MultiCodeValue">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from MultiCodeValue t Where t.delFlag = :delFlag
+        #if($parentItemId && $parentItemId.length() > 0)
+        AND t.parentItemId like concat('%', :parentItemId, '%')
+        #end
+        #if($codeId && $codeId.length() > 0)
+        AND t.codeId = :codeId
+        #end
+        #if($codeName && $codeName.length() > 0)
+        AND t.codeName = :codeName
+        #end
+        ]]>
+    </query>
+    <query name="queryProperties" qlType="JPQL">
+
+        <![CDATA[
+        select t from MultiCodeValue t Where t.delFlag = :delFlag
+                #if($parentItemId && $parentItemId.length() > 0)
+                AND t.parentItemId = :parentItemId
+                #else
+                AND t.parentItemId is null
+                #end
+        ]]> order by t.sortSq asc
+    </query>
+</dynamic-hibernate>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.SensitiveWords">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from SensitiveWords t Where t.delFlag = :delFlag
+                #if($words && $words.length() > 0)
+                AND t.words like concat('%', :words, '%')
+                #end
+
+        ]]>
+    </query>
+</dynamic-hibernate>

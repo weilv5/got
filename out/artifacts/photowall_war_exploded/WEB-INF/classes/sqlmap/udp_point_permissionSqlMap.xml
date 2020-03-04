@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.UdpPointPermission">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from UdpPointPermission t Where t.delFlag = :delFlag
+                #if($pointName && $pointName.length() > 0)
+                AND t.pointName like concat('%', :pointName, '%')
+                #end
+
+        ]]>
+    </query>
+
+    <query name="queryPermissionByRoles" qlType="JPQL">
+        <![CDATA[
+            select t from UdpPointPermission  t left join t.roleList r Where t.delFlag = :delFlag
+            #if($roleList)
+            AND r.id in (:roleList)
+            #end
+        ]]>
+    </query>
+</dynamic-hibernate>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:beans="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.3.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan
+            base-package="springfox,com.jsict.biz.controller, com.jsict.framework.core.controller,com.jsict.demo.applyresource.controller,com.jsict.activiti.controller,com.jsict.biz.controller.api">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+    </context:component-scan>
+
+    <mvc:default-servlet-handler/>
+
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.jsict.framework.core.controller.DateConverter"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- 支持翻页对象注解 -->
+    <beans:bean id="sortResolver"
+                class="org.springframework.data.web.SortHandlerMethodArgumentResolver"/>
+    <mvc:annotation-driven conversion-service="conversionService">
+        <mvc:argument-resolvers>
+            <beans:bean id="pageableResolver"
+                        class="org.springframework.data.web.PageableHandlerMethodArgumentResolver">
+                <constructor-arg index="0" ref="sortResolver"/>
+            </beans:bean>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/" />
+    <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/" />
+    <mvc:resources location="/resources/" mapping="/resources/**"/>
+    <!--<mvc:default-servlet-handler default-servlet-name="/DruidStatView"/>-->
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/swagger-resources/**"/><!-- swagger静态资源-->
+            <mvc:exclude-mapping path="/v2/**"/><!-- swagger静态资源-->
+            <mvc:exclude-mapping path="/swagger-ui.html#!/**"/><!-- swagger静态资源-->
+            <bean class="com.jsict.framework.filter.RepeatDataInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <bean class="com.jsict.config.SwaggerConfig"/>
+
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          p:prefix="/WEB-INF/admin/" p:suffix=".jsp"/>
+</beans>

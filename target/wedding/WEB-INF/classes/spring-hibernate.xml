@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:p="http://www.springframework.org/schema/p"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+          http://www.springframework.org/schema/aop
+          http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+          http://www.springframework.org/schema/context
+          http://www.springframework.org/schema/context/spring-context-4.3.xsd
+          http://www.springframework.org/schema/tx
+          http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+          http://www.springframework.org/schema/cache
+          http://www.springframework.org/schema/cache/spring-cache-4.3.xsd"
+
+
+        default-lazy-init="true">
+    <context:annotation-config />
+    <context:component-scan base-package="com.jsict.*">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+    <bean id="hibernatePropertis" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath:hibernate.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <import resource="spring-datasource.xml"/>
+    <!-- JPA实体工厂配置 -->
+    <bean id="entityManagerFactory" lazy-init="false"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!-- 扫描实体路径 -->
+        <property name="packagesToScan"  >
+            <array>
+                <value>com.jsict.biz</value>
+                <value>com.jsict.framework.core.task.model</value>
+                <value>com.jsict.framework.core.model</value>
+                <value>com.jsict.demo.applyresource.model</value>
+            </array>
+        </property>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="showSql" value="${hibernate.show_sql}" />
+                <property name="generateDdl" value="true" />
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.max_fetch_depth">${hibernate.max_fetch_depth}</prop>
+                <prop key="hibernate.jdbc.fetch_size">${hibernate.jdbc.fetch_size}</prop>
+                <prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+                <prop key="hibernate.connection.SetBigStringTryClob">${hibernate.connection.SetBigStringTryClob}
+                </prop>
+                <prop key="hibernate.archive.autodetection">${hibernate.archive.autodetection}</prop>
+                <prop key="hibernate.connection.charSet">${hibernate.connection.charSet}</prop>
+                <prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
+                <prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}
+                </prop>
+                <prop key="hibernate.ejb.naming_strategy">${hibernate.ejb.naming_strategy}</prop>
+                <prop key="hibernate.cache.region.factory_class">
+                    ${hibernate.cache.region.factory_class}
+                </prop>
+                <prop key="net.sf.ehcache.configurationResourceName">
+                    ${net.sf.ehcache.configurationResourceName}
+                </prop>
+                <prop key="hbm2ddl.auto">${hbm2ddl.auto}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <!-- 事务注解 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="find*" read-only="true" />
+            <tx:method name="list*" read-only="true" />
+            <tx:method name="get*" read-only="true" />
+            <tx:method name="page*" read-only="true" />
+            <tx:method name="setDataDictionary" read-only="true" propagation="NOT_SUPPORTED"/>
+            <tx:method name="*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+    <!-- 配置参与事务的类 -->
+    <aop:config proxy-target-class="true">
+        <!-- 测试GenericDao用，DAO层不适合做事务-->
+        <aop:pointcut id="dao-tx" expression="execution(* *..dao.hibernate.*..*(..))" />
+        <aop:advisor pointcut-ref="dao-tx" advice-ref="txAdvice" />
+    </aop:config>
+
+    <!-- JPQL/SQL映射 -->
+    <bean id="sqlMapHandler" class="com.jsict.framework.core.dao.hibernate.SqlMapHandler">
+        <property name="fileNames">
+            <list>
+                <value>classpath*:**/*SqlMap.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 敏感词处理器 -->
+    <bean id="sensitiveProcesser" class="com.jsict.biz.sensitive.ExpProcesser" />
+
+    <bean id="httpClient" class="com.jsict.framework.http.HttpClientFactoryBean"/>
+
+    <!-- 实体变化Handler
+    <bean id="entityChangeListener" class="com.jsict.framework.dao.EmptyEntityChangeHandler"/>
+    -->
+</beans>

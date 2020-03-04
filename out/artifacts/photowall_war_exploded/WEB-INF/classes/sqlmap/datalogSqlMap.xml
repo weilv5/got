@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.framework.core.model.EntityChangeList">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from EntityChangeList t Where t.delFlag = :delFlag
+                #if($className && $className.length() > 0)
+                AND t.className like concat('%', :className, '%')
+                #end
+                #if($entityChangeType)
+                AND t.entityChangeType = :entityChangeType
+                #end
+                #if($createdDateStart)
+                AND t.createdDate >= :createdDateStart
+                #end
+                #if($operatorId && $operatorId.length() > 0)
+                AND t.operatorId like concat('%', :operatorId, '%')
+                #end
+                #if($createdDateEnd)
+                AND t.createdDate <= :createdDateEnd
+                #end
+        ]]> order by t.createdDate desc
+    </query>
+    <query name="datalogStat" qlType="SQL">
+        select class_name, change_type, count(1) as cnt from entity_change_list GROUP BY class_name, change_type order by cnt desc limit 0, :size
+    </query>
+</dynamic-hibernate>

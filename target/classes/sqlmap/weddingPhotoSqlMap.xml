@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.WeddingPhoto">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from WeddingPhoto t Where t.delFlag = :delFlag
+            #if($photoSort && $photoSort.length() > 0)
+            AND t.photoSort = :photoSort
+            #end
+            #if($albumSort && $albumSort.length() > 0)
+            AND t.albumSort = :albumSort
+            #end
+        order by t.createdDate desc
+        ]]>
+    </query>
+</dynamic-hibernate>

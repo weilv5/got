@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.DataDictionary">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from DataDictionary t Where t.delFlag = :delFlag
+                #if($dictionaryCode && $dictionaryCode.length() > 0)
+                AND t.dictionaryCode like concat('%', :dictionaryCode, '%')
+                #end
+
+        ]]>
+    </query>
+</dynamic-hibernate>

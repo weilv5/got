@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.MultiCode">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from MultiCode t Where t.delFlag = :delFlag
+                #if($codeName && $codeName.length() > 0)
+                AND t.codeName like concat('%', :codeName, '%')
+                #end
+
+                #if($sortSq && $sortSq.length() > 0)
+                AND t.sortSq like concat('%', :sortSq, '%')
+                #end
+
+                #if($comments && $comments.length() > 0)
+                AND t.comments like concat('%', :comments, '%')
+                #end
+
+                #if($id && $id.length() > 0)
+                AND t.id like concat('%', :id, '%')
+                #end
+
+        ]]>
+    </query>
+</dynamic-hibernate>

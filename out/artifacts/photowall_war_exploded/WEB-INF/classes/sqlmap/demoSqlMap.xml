@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.demo.applyresource.model.Demo">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from Demo t Where t.delFlag = :delFlag
+        ]]>
+    </query>
+</dynamic-hibernate>
